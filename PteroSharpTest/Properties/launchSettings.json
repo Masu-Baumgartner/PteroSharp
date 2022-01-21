@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PteroSharpTest": {
+      "commandName": "Project",
+      "workingDirectory": "C:\\Users\\marce\\source\\repos\\PteroSharp\\PteroSharpTest"
+    }
+  }
+}

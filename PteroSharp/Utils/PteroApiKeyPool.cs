@@ -18,7 +18,7 @@ namespace PteroSharp.Utils
         {
             lock(Pool)
             {
-                Pool.Add(key, DateTime.Now);
+                Pool.Add(key, DateTime.Now.Subtract(TimeSpan.FromSeconds(Timeout)));
             }
         }
 
@@ -28,7 +28,7 @@ namespace PteroSharp.Utils
 
             foreach(var k in Pool.Keys)
             {
-                if((DateTime.Now - Pool[key]).TotalSeconds > Timeout)
+                if((DateTime.Now - Pool[k]).TotalSeconds > Timeout)
                 {
                     key = k;
                     break;
