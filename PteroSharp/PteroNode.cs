@@ -200,30 +200,30 @@ namespace PteroSharp
         public DateTimeOffset CreatedAt { get; private set; }
         public DateTimeOffset UpdatedAt { get; private set; }
 
-        public static PteroNode FromNodeDatum(NodeDatum nodeDatum, PteroClient client)
+        public static PteroNode FromNodeAttributes(NodeAttributes nodeDatum, PteroClient client)
         {
             var result = new PteroNode();
 
-            result.Id = nodeDatum.Attributes.Id;
-            result._Name = nodeDatum.Attributes.Name;
-            result._BehindProxy = nodeDatum.Attributes.BehindProxy;
-            result.CreatedAt = nodeDatum.Attributes.CreatedAt;
-            result.DaemonBase = nodeDatum.Attributes.DaemonBase;
-            result._DaemonListen = nodeDatum.Attributes.DaemonListen;
-            result._DaemonSftp = nodeDatum.Attributes.DaemonSftp;
-            result._Description = nodeDatum.Attributes.Description;
-            result._Disk = nodeDatum.Attributes.Disk;
-            result._DiskOverallocate = nodeDatum.Attributes.DiskOverallocate;
-            result._Fqdn = nodeDatum.Attributes.Fqdn;
-            result._LocationId = nodeDatum.Attributes.LocationId;
-            result._MaintenanceMode = nodeDatum.Attributes.MaintenanceMode;
-            result._Memory = nodeDatum.Attributes.Memory;
-            result._MemoryOverallocate = nodeDatum.Attributes.MemoryOverallocate;
-            result.Public = nodeDatum.Attributes.Public;
-            result._Scheme = nodeDatum.Attributes.Scheme;
-            result.UpdatedAt = nodeDatum.Attributes.UpdatedAt;
-            result._UploadSize = nodeDatum.Attributes.UploadSize;
-            result.Uuid = nodeDatum.Attributes.Uuid;
+            result.Id = nodeDatum.Id;
+            result._Name = nodeDatum.Name;
+            result._BehindProxy = nodeDatum.BehindProxy;
+            result.CreatedAt = nodeDatum.CreatedAt;
+            result.DaemonBase = nodeDatum.DaemonBase;
+            result._DaemonListen = nodeDatum.DaemonListen;
+            result._DaemonSftp = nodeDatum.DaemonSftp;
+            result._Description = nodeDatum.Description;
+            result._Disk = nodeDatum.Disk;
+            result._DiskOverallocate = nodeDatum.DiskOverallocate;
+            result._Fqdn = nodeDatum.Fqdn;
+            result._LocationId = nodeDatum.LocationId;
+            result._MaintenanceMode = nodeDatum.MaintenanceMode;
+            result._Memory = nodeDatum.Memory;
+            result._MemoryOverallocate = nodeDatum.MemoryOverallocate;
+            result.Public = nodeDatum.Public;
+            result._Scheme = nodeDatum.Scheme;
+            result.UpdatedAt = nodeDatum.UpdatedAt;
+            result._UploadSize = nodeDatum.UploadSize;
+            result.Uuid = nodeDatum.Uuid;
 
             result.Client = client;
 

@@ -20,6 +20,9 @@ namespace PteroSharpTest
             Client.AppPool.AddKey(config[2]);
             Client.ClientPool.AddKey(config[1]);
 
+            /*
+             * See all nodes
+             * 
             foreach(var node in Client.Nodes)
             {
                 Logger.Info("Node found: " + node.Name);
@@ -27,6 +30,16 @@ namespace PteroSharpTest
                 //if (node.Name == "Node 1") Test for renaming nodes
                 //    node.Name = "Testy";
             }
+            */
+
+            /*
+             * See all users
+             * 
+            foreach(var user in Client.Users)
+            {
+                Logger.Info("User found: " + user.Username);
+            }
+            */
 
             Console.ReadLine();
         }

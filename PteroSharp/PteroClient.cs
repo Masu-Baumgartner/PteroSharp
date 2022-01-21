@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 
 using PteroSharp.ApiModels.Node;
+using PteroSharp.ApiModels.User;
 using PteroSharp.Utils;
 
 namespace PteroSharp
@@ -24,8 +25,45 @@ namespace PteroSharp
         {
             get
             {
-                return new List<PteroUser>().AsReadOnly();
+                var result = new List<PteroUser>();
+
+                var apiResult = PterodactylApiHelper.Get<ListUsersResponse>(
+                    AppPool,
+                    PterodactylUrl,
+                    "api/application/users",
+                    null,
+                    out _);
+
+                foreach (var user in apiResult.Data)
+                {
+                    result.Add(PteroUser.FromUserAttributes(user.Attributes, this));
+                }
+
+                if (apiResult.Meta.Pagination.CurrentPage != apiResult.Meta.Pagination.TotalPages)
+                {
+                    for (int i = 2; i <= apiResult.Meta.Pagination.TotalPages; i++)
+                    {
+                        var apiResult2 = PterodactylApiHelper.Get<ListUsersResponse>(
+                            AppPool,
+                            PterodactylUrl,
+                            $"api/application/users?page={i}",
+                            null,
+                            out _);
+
+                        foreach (var user in apiResult2.Data)
+                        {
+                            result.Add(PteroUser.FromUserAttributes(user.Attributes, this));
+                        }
+                    }
+                }
+
+                return result.AsReadOnly();
             }
+        }
+
+        public PteroUser FindUserById(int id)
+        {
+
         }
 
         public ReadOnlyCollection<PteroNode> Nodes
@@ -43,7 +81,7 @@ namespace PteroSharp
 
                 foreach (var node in apiResult.Data)
                 {
-                    result.Add(PteroNode.FromNodeDatum(node, this));
+                    result.Add(PteroNode.FromNodeAttributes(node.Attributes, this));
                 }
 
                 if (apiResult.Meta.Pagination.CurrentPage != apiResult.Meta.Pagination.TotalPages)
@@ -59,7 +97,7 @@ namespace PteroSharp
 
                         foreach (var node in apiResult2.Data)
                         {
-                            result.Add(PteroNode.FromNodeDatum(node, this));
+                            result.Add(PteroNode.FromNodeAttributes(node.Attributes, this));
                         }
                     }
                 }
