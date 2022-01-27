@@ -41,6 +41,11 @@ namespace PteroSharpTest
             }
             */
 
+            /* Renaming
+            var server = Client.FindServerById(667);
+            server.Name = "Test";
+            */
+
             Console.ReadLine();
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 
 using PteroSharp.ApiModels.Node;
+using PteroSharp.ApiModels.Server;
 using PteroSharp.ApiModels.User;
 using PteroSharp.Utils;
 
@@ -17,8 +18,52 @@ namespace PteroSharp
         {
             get
             {
-                return new List<PteroServer>().AsReadOnly();
+                var result = new List<PteroServer>();
+
+                var apiResult = PterodactylApiHelper.Get<ListServersResponse>(
+                    AppPool,
+                    PterodactylUrl,
+                    "api/application/servers",
+                    null,
+                    out _);
+
+                foreach (var server in apiResult.Data)
+                {
+                    result.Add(PteroServer.FromServerAttributes(server.Attributes, this));
+                }
+
+                if (apiResult.Meta.Pagination.CurrentPage != apiResult.Meta.Pagination.TotalPages)
+                {
+                    for (int i = 2; i <= apiResult.Meta.Pagination.TotalPages; i++)
+                    {
+                        var apiResult2 = PterodactylApiHelper.Get<ListServersResponse>(
+                            AppPool,
+                            PterodactylUrl,
+                            $"api/application/servers?page={i}",
+                            null,
+                            out _);
+
+                        foreach (var server in apiResult2.Data)
+                        {
+                            result.Add(PteroServer.FromServerAttributes(server.Attributes, this));
+                        }
+                    }
+                }
+
+                return result.AsReadOnly();
             }
+        }
+        public PteroServer FindServerById(int id)
+        {
+            var result = PterodactylApiHelper.Get<GetServerDetailsResponse>(
+                AppPool,
+                PterodactylUrl,
+                "api/application/servers/" + id,
+                null,
+                out _
+            );
+
+            return PteroServer.FromServerAttributes(result.Attributes, this);
         }
 
         public ReadOnlyCollection<PteroUser> Users
@@ -63,7 +108,9 @@ namespace PteroSharp
 
         public PteroUser FindUserById(int id)
         {
+            var result = PterodactylApiHelper.Get<GetUserDetailsResponse>(AppPool, PterodactylUrl, "api/application/users/1", null, out _);
 
+            return PteroUser.FromUserAttributes(result.Attributes, this);
         }
 
         public ReadOnlyCollection<PteroNode> Nodes
