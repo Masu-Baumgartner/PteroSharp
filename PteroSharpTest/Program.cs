@@ -55,9 +55,24 @@ namespace PteroSharpTest
             server2.Limits = limits;
             */
 
+            /* Toggle suspension
             var server3 = Client.FindServerById(667);
             Logger.Debug("Server suspended: " + server3.Suspended);
             server3.Suspended = !server3.Suspended;
+            */
+
+            /* Change startup args
+            var server4 = Client.FindServerById(667);
+
+            var con = server4.Container;
+
+            if (con.Environment.ContainsKey("AUTO_UPDATE"))
+                con.Environment["AUTO_UPDATE"] = "1";
+            else
+                con.Environment.Add("AUTO_UPDATE", "1");
+
+            server4.Container = con;
+            */
 
             Logger.Debug("End reached");
 

@@ -110,8 +110,33 @@ namespace PteroSharp
         private long _Allocation { get; set; }
         public long Nest { get; set; }
         private long _Nest { get; set; }
-        public long Egg { get; set; }
+        public long Egg
+        {
+            get
+            {
+                return _Egg;
+            }
+            set
+            {
+                _Egg = value;
+                UpdateStartup();
+            }
+        }
         private long _Egg { get; set; }
+
+        public Container Container
+        {
+            get
+            {
+                return _Container;
+            }
+            set
+            {
+                _Container = value;
+                UpdateStartup();
+            }
+        }
+        private Container _Container { get; set; }
 
 
         public static PteroServer FromServerAttributes(ServerAttributes attributes, PteroClient client)
@@ -129,6 +154,8 @@ namespace PteroSharp
             result._User = attributes.User;
             result.Uuid = attributes.Uuid;
             result._Allocation = attributes.Allocation;
+            result._Container = attributes.Container;
+            result._Egg = attributes.Egg;
 
             result.Client = client;
 
@@ -199,6 +226,26 @@ namespace PteroSharp
                     out _
                     );
             }
+        }
+
+        private void UpdateStartup()
+        {
+            var request = new UpdateServerStartupRequest()
+            {
+                Egg = _Egg,
+                Startup = _Container.StartupCommand,
+                Environment = _Container.Environment,
+                Image = _Container.Image,
+                SkipScripts = false
+            };
+
+            PterodactylApiHelper.Patch(
+                    Client.AppPool,
+                    Client.PterodactylUrl,
+                    "api/application/servers/" + Id + "/startup",
+                    request,
+                    out _
+                    );
         }
     }
 }
