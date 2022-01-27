@@ -46,6 +46,21 @@ namespace PteroSharpTest
             server.Name = "Test";
             */
 
+            /* Update limits
+            var server2 = Client.FindServerById(667);
+            var limits = server2.Limits;
+
+            limits.Disk = 2048;
+
+            server2.Limits = limits;
+            */
+
+            var server3 = Client.FindServerById(667);
+            Logger.Debug("Server suspended: " + server3.Suspended);
+            server3.Suspended = !server3.Suspended;
+
+            Logger.Debug("End reached");
+
             Console.ReadLine();
         }
     }
