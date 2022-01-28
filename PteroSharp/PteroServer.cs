@@ -94,7 +94,6 @@ namespace PteroSharp
         }
         private long _User { get; set; }
         public long Node { get; set; }
-        private long _Node { get; set; }
         public long Allocation
         {
             get
@@ -109,7 +108,6 @@ namespace PteroSharp
         }
         private long _Allocation { get; set; }
         public long Nest { get; set; }
-        private long _Nest { get; set; }
         public long Egg
         {
             get
@@ -148,8 +146,8 @@ namespace PteroSharp
             result._Limits = attributes.Limits;
             result._FeatureLimits = attributes.FeatureLimits;
             result._Name = attributes.Name;
-            result._Nest = attributes.Nest;
-            result._Node = attributes.Node;
+            result.Nest = attributes.Nest;
+            result.Node = attributes.Node;
             result._Suspended = attributes.Suspended;
             result._User = attributes.User;
             result.Uuid = attributes.Uuid;
@@ -160,6 +158,28 @@ namespace PteroSharp
             result.Client = client;
 
             return result;
+        }
+
+        public void Delete()
+        {
+            PterodactylApiHelper.Delete(
+                Client.AppPool,
+                Client.PterodactylUrl,
+                "api/application/servers/" + Id,
+                null,
+                out _
+                );
+        }
+
+        public void DeleteForce()
+        {
+            PterodactylApiHelper.Delete(
+                Client.AppPool,
+                Client.PterodactylUrl,
+                "api/application/servers/" + Id + "/force",
+                null,
+                out _
+                );
         }
 
         private void UpdateBuild()
