@@ -121,7 +121,6 @@ namespace PteroSharp
             }
         }
         private long _Egg { get; set; }
-
         public Container Container
         {
             get
@@ -135,6 +134,19 @@ namespace PteroSharp
             }
         }
         private Container _Container { get; set; }
+        public CurrentStatus Status { get; set; }
+        public PteroConsole Console
+        {
+            get
+            {
+                if (_Console == null)
+                    _Console = new PteroConsole(this);
+
+                return _Console;
+            }
+        }
+
+        private PteroConsole _Console { get; set; }
 
 
         public static PteroServer FromServerAttributes(ServerAttributes attributes, PteroClient client)
@@ -154,6 +166,11 @@ namespace PteroSharp
             result._Allocation = attributes.Allocation;
             result._Container = attributes.Container;
             result._Egg = attributes.Egg;
+
+            result.Status = new CurrentStatus()
+            {
+                UsedServer = result
+            };
 
             result.Client = client;
 
@@ -266,6 +283,196 @@ namespace PteroSharp
                     request,
                     out _
                     );
+        }
+
+        #region Power Actions
+
+        public void Start()
+        {
+            try
+            {
+                PterodactylApiHelper.Post(
+                    Client.ClientPool,
+                    Client.PterodactylUrl,
+                    "api/client/servers/" + Uuid + "/power",
+                    new ChangePowerStateRequest()
+                    {
+                        Signal = "start"
+                    },
+                    out _
+                    );
+            }
+            catch (Exception) { }
+        }
+
+        public void Stop()
+        {
+            try
+            {
+                PterodactylApiHelper.Post(
+                    Client.ClientPool,
+                    Client.PterodactylUrl,
+                    "api/client/servers/" + Uuid + "/power",
+                    new ChangePowerStateRequest()
+                    {
+                        Signal = "stop"
+                    },
+                    out _
+                    );
+            }
+            catch (Exception) { }
+        }
+
+        public void Kill()
+        {
+            try
+            {
+                PterodactylApiHelper.Post(
+                    Client.ClientPool,
+                    Client.PterodactylUrl,
+                    "api/client/servers/" + Uuid + "/power",
+                    new ChangePowerStateRequest()
+                    {
+                        Signal = "kill"
+                    },
+                    out _
+                    );
+            }
+            catch (Exception) { }
+        }
+
+        public void Restart()
+        {
+            try
+            {
+                PterodactylApiHelper.Post(
+                    Client.ClientPool,
+                    Client.PterodactylUrl,
+                    "api/client/servers/" + Uuid + "/power",
+                    new ChangePowerStateRequest()
+                    {
+                        Signal = "restart"
+                    },
+                    out _
+                    );
+            }
+            catch (Exception) { }
+        }
+
+        #endregion
+
+        public void EnterCommand(string cmd)
+        {
+            try
+            {
+                PterodactylApiHelper.Post(
+                    Client.ClientPool,
+                    Client.PterodactylUrl,
+                    "api/client/servers/" + Uuid + "/command",
+                    new SendCommandRequest()
+                    {
+                        Command = cmd
+                    },
+                    out _
+                    );
+            }
+            catch (Exception) { }
+        }
+
+        public struct CurrentStatus
+        {
+            public PteroServer UsedServer { get; set; }
+            public string State
+            {
+                get
+                {
+                    return PterodactylApiHelper.Get<GetServerResourceUsageResponse>(
+                            UsedServer.Client.ClientPool,
+                            UsedServer.Client.PterodactylUrl,
+                            "api/client/servers/" + UsedServer.Uuid + "/resources",
+                            null,
+                            out _
+                        ).Attributes.CurrentState;
+                }
+            }
+            public bool Suspended
+            {
+                get
+                {
+                    return PterodactylApiHelper.Get<GetServerResourceUsageResponse>(
+                            UsedServer.Client.ClientPool,
+                            UsedServer.Client.PterodactylUrl,
+                            "api/client/servers/" + UsedServer.Uuid + "/resources",
+                            null,
+                            out _
+                        ).Attributes.IsSuspended;
+                }
+            }
+            public long MemoryBytes
+            {
+                get
+                {
+                    return PterodactylApiHelper.Get<GetServerResourceUsageResponse>(
+                            UsedServer.Client.ClientPool,
+                            UsedServer.Client.PterodactylUrl,
+                            "api/client/servers/" + UsedServer.Uuid + "/resources",
+                            null,
+                            out _
+                        ).Attributes.Resources.MemoryBytes;
+                }
+            }
+            public long CpuAbsolute
+            {
+                get
+                {
+                    return PterodactylApiHelper.Get<GetServerResourceUsageResponse>(
+                            UsedServer.Client.ClientPool,
+                            UsedServer.Client.PterodactylUrl,
+                            "api/client/servers/" + UsedServer.Uuid + "/resources",
+                            null,
+                            out _
+                        ).Attributes.Resources.CpuAbsolute;
+                }
+            }
+            public long DiskBytes
+            {
+                get
+                {
+                    return PterodactylApiHelper.Get<GetServerResourceUsageResponse>(
+                            UsedServer.Client.ClientPool,
+                            UsedServer.Client.PterodactylUrl,
+                            "api/client/servers/" + UsedServer.Uuid + "/resources",
+                            null,
+                            out _
+                        ).Attributes.Resources.DiskBytes;
+                }
+            }
+            public long NetworkRxBytes
+            {
+                get
+                {
+                    return PterodactylApiHelper.Get<GetServerResourceUsageResponse>(
+                            UsedServer.Client.ClientPool,
+                            UsedServer.Client.PterodactylUrl,
+                            "api/client/servers/" + UsedServer.Uuid + "/resources",
+                            null,
+                            out _
+                        ).Attributes.Resources.NetworkRxBytes;
+                }
+            }
+            public long NetworkTxBytes
+            {
+                get
+                {
+                    return PterodactylApiHelper.Get<GetServerResourceUsageResponse>(
+                            UsedServer.Client.ClientPool,
+                            UsedServer.Client.PterodactylUrl,
+                            "api/client/servers/" + UsedServer.Uuid + "/resources",
+                            null,
+                            out _
+                        ).Attributes.Resources.NetworkTxBytes;
+                }
+            }
         }
     }
 }

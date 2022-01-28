@@ -74,9 +74,25 @@ namespace PteroSharpTest
             server4.Container = con;
             */
 
+            /* Server resource view
+            var server5 = Client.FindServerById(540);
+
+            Logger.Info(server5.Status.CpuAbsolute);
+            */
+
+            var server6 = Client.FindServerById(540);
+
+            server6.Console.OnConsoleContentAdded += OnMessage;
+            server6.Console.Check();
+
             Logger.Debug("End reached");
 
             Console.ReadLine();
+        }
+
+        private static void OnMessage(object sender, string e)
+        {
+            Logger.Warn(e);
         }
     }
 }
