@@ -121,15 +121,15 @@ namespace PteroSharp
             result.Id = attributes.Id;
 
             result.CreatedAt = attributes.CreatedAt;
-            result.Email = attributes.Email;
+            result._Email = attributes.Email;
             result.ExternalId = attributes.ExternalId;
-            result.FirstName = attributes.FirstName;
-            result.IsAdmin = attributes.RootAdmin;
-            result.Language = attributes.Language;
-            result.LastName = attributes.LastName;
+            result._FirstName = attributes.FirstName;
+            result._IsAdmin = attributes.RootAdmin;
+            result._Language = attributes.Language;
+            result._LastName = attributes.LastName;
             result.TwoFactor = attributes.The2Fa;
             result.UpdatedAt = attributes.UpdatedAt;
-            result.Username = attributes.Username;
+            result._Username = attributes.Username;
             result.Uuid = attributes.Uuid;
 
             result.Client = client;

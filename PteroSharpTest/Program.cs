@@ -34,12 +34,12 @@ namespace PteroSharpTest
 
             /*
              * See all users
-             * 
+             * */
             foreach(var user in Client.Users)
             {
                 Logger.Info("User found: " + user.Username);
             }
-            */
+            /*/
 
             /* Renaming
             var server = Client.FindServerById(667);
@@ -79,12 +79,12 @@ namespace PteroSharpTest
 
             Logger.Info(server5.Status.CpuAbsolute);
             */
-
+            /*
             var server6 = Client.FindServerById(540);
 
             server6.Console.OnConsoleContentAdded += OnMessage;
             server6.Console.Subscribe();
-
+            */
             Logger.Debug("End reached");
 
             Console.ReadLine();

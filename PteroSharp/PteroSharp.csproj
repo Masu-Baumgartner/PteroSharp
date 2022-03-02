@@ -2,6 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <Version>0.1</Version>
+    <Company>Endelon Hosting</Company>
+    <Description>A pterodactyl api wrapper</Description>
+    <Copyright>Marcel Baumgartner</Copyright>
+    <PackageProjectUrl>https://github.com/Marcel-Baumgartner/PteroSharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Marcel-Baumgartner/PteroSharp</RepositoryUrl>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
