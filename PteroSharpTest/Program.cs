@@ -83,7 +83,7 @@ namespace PteroSharpTest
             var server6 = Client.FindServerById(540);
 
             server6.Console.OnConsoleContentAdded += OnMessage;
-            server6.Console.Check();
+            server6.Console.Subscribe();
 
             Logger.Debug("End reached");
 

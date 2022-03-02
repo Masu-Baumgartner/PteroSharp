@@ -29,6 +29,14 @@ namespace PteroSharp
             }
         }
 
+        public bool IsConnected
+        {
+            get
+            {
+                return (WebSocket.State == WebSocketState.Open);
+            }
+        }
+        private int Subscribers { get; set; } = 0;
         private List<string> ConsoleMessages { get; set; }
         private bool IsFirstStatus { get; set; } = true;
         public EventHandler OnConsoleContentChanged { get; set; }
@@ -36,7 +44,7 @@ namespace PteroSharp
         public EventHandler<string> OnServerStateChanged { get; set; }
         public EventHandler<long> OnServerCpuChanged { get; set; }
         public EventHandler<long> OnServerMemoryChanged { get; set; }
-        public EventHandler<long> OnServerDiskChnaged { get; set; }
+        public EventHandler<long> OnServerDiskChanged { get; set; }
 
         #region Websocket Things
         private Task WebSocketTask { get; set; }
@@ -51,19 +59,34 @@ namespace PteroSharp
             WebSocket = new ClientWebSocket();
         }
 
-        public void Check()
+        public void Subscribe()
         {
-            if(OnConsoleContentAdded != null && OnConsoleContentChanged != null)
+            Subscribers++;
+
+            if(!IsConnected && WebSocket.State != WebSocketState.Connecting)
             {
-                if (OnConsoleContentChanged.GetInvocationList().Length > 0
-                || OnConsoleContentAdded.GetInvocationList().Length > 0)
+                Reconnect();
+            }
+        }
+
+        public void Unsubscribe()
+        {
+            Subscribers--;
+
+            if (Subscribers < 0)
+                Subscribers = 0;
+
+            if(Subscribers == 0)
+            {
+                if (WebSocket == null)
                 {
-                    if (WebSocket.State == WebSocketState.Closed
-                        || WebSocket.State == WebSocketState.Aborted
-                        || WebSocket.State == WebSocketState.None)
-                    {
-                        Reconnect();
-                    }
+                    WebSocket = new ClientWebSocket();
+                }
+
+                if (WebSocket.State == WebSocketState.Open
+                    || WebSocket.State == WebSocketState.Connecting)
+                {
+                    WebSocket.CloseAsync(WebSocketCloseStatus.Empty, null, CancellationToken).Wait();
                 }
             }
         }
@@ -126,8 +149,7 @@ namespace PteroSharp
                 {
                     string read = Receive().Result;
 
-                    if(OnConsoleContentChanged.GetInvocationList().Length == 0
-                        && OnConsoleContentAdded.GetInvocationList().Length == 0)
+                    if(Subscribers <= 0)
                     {
                         WebSocket.CloseAsync(WebSocketCloseStatus.Empty, null, CancellationToken).Wait();
                         return;
@@ -140,8 +162,8 @@ namespace PteroSharp
                         case "auth success":
                             var msg = "Console: Authenicated";
                             ConsoleMessages.Add(msg);
-                            OnConsoleContentAdded.Invoke(this, msg);
-                            OnConsoleContentChanged.Invoke(this, EventArgs.Empty);
+                            OnConsoleContentAdded?.Invoke(this, msg);
+                            OnConsoleContentChanged?.Invoke(this, EventArgs.Empty);
                             break;
 
                         case "status":
@@ -158,17 +180,43 @@ namespace PteroSharp
                                 Send(JsonConvert.SerializeObject(sl)).Wait();
                             }
 
-                            OnServerStateChanged.Invoke(this, readevent.Args[0]);
+                            OnServerStateChanged?.Invoke(this, readevent.Args[0]);
                             break;
 
                         case "console output":
 
-                            string line = readevent.Args[0];
+                            string line1 = readevent.Args[0];
 
-                            ConsoleMessages.Add(line);
-                            OnConsoleContentAdded.Invoke(this, line);
-                            OnConsoleContentChanged.Invoke(this, EventArgs.Empty);
+                            ConsoleMessages.Add(line1);
+                            OnConsoleContentAdded?.Invoke(this, line1);
+                            OnConsoleContentChanged?.Invoke(this, EventArgs.Empty);
 
+                            break;
+
+                        case "token expiring":
+
+                            string line2 = "Token expiring. Reconnecting";
+                            ConsoleMessages.Add(line2);
+                            OnConsoleContentAdded?.Invoke(this, line2);
+                            OnConsoleContentChanged?.Invoke(this, EventArgs.Empty);
+
+                            Reconnect();
+
+                            break;
+                        case "stats":
+
+                            var ri = JsonConvert.DeserializeObject<ServerStatusModel>(readevent.Args[0]);
+
+                            OnServerCpuChanged?.Invoke(this, (long)ri.CpuAbsolute);
+                            OnServerDiskChanged?.Invoke(this, ri.DiskBytes);
+                            OnServerMemoryChanged?.Invoke(this, ri.MemoryBytes);
+
+                            break;
+                        default:
+                            string line3 = "Unknown state: " + readevent.Event;
+                            ConsoleMessages.Add(line3);
+                            OnConsoleContentAdded?.Invoke(this, line3);
+                            OnConsoleContentChanged?.Invoke(this, EventArgs.Empty);
                             break;
                     }
                 }
